@@ -15,29 +15,22 @@
  */
 package com.example.androiddevchallenge.ui.theme
 
+import androidx.compose.material.Colors
 import androidx.compose.material.Typography
 import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
 
 // Set of Material typography styles to start with
-val typography = Typography(
-    body1 = TextStyle(
-        fontFamily = FontFamily.Default,
+fun typography(colors: Colors) = Typography(
+    h5 = TextStyle(
         fontWeight = FontWeight.Normal,
-        fontSize = 16.sp
+        fontSize = 24.sp,
+        letterSpacing = 0.sp,
+        color = colors.onPrimary,
     )
-        /* Other default text styles to override
-    button = TextStyle(
-        fontFamily = FontFamily.Default,
-        fontWeight = FontWeight.W500,
-        fontSize = 14.sp
-    ),
-    caption = TextStyle(
-        fontFamily = FontFamily.Default,
-        fontWeight = FontWeight.Normal,
-        fontSize = 12.sp
-    )
-    */
 )
+
+val Typography.h2SemiBold get() = h2.copy(fontWeight = FontWeight.SemiBold)
+val Typography.h3Bold get() = h3.copy(fontWeight = FontWeight.Bold)
+val Typography.h5Bold get() = h5.copy(fontWeight = FontWeight.Bold)

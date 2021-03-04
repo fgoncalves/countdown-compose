@@ -10,4 +10,5 @@
       the License.
       -->
     <string name="app_name">Timely</string>
+    <string name="delete">Delete</string>
 </resources>
