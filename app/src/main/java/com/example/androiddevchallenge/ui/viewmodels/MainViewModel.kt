@@ -49,7 +49,7 @@ class MainViewModelImpl : MainViewModel() {
     override fun onDigitClicked(digit: Int) {
         val value = appStateMutable.value!!
         appStateMutable.value = value.copy(
-            timeRep = value.timeRep * 10 + digit
+            timeRep = (value.timeRep * 10 + digit).coerceAtMost(999999)
         )
     }
 
