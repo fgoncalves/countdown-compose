@@ -1,9 +1,11 @@
 package com.example.androiddevchallenge.ui.viewmodels
 
+import android.os.CountDownTimer
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.androiddevchallenge.ui.utils.asMillis
+import com.example.androiddevchallenge.ui.utils.asTime
 
 
 sealed class CounterState {
@@ -39,6 +41,7 @@ abstract class MainViewModel : ViewModel() {
 }
 
 class MainViewModelImpl : MainViewModel() {
+    private var currentTimer: CountDownTimer? = null
     private val appStateMutable = MutableLiveData(AppState())
 
     override val appState: LiveData<AppState> = appStateMutable
@@ -60,20 +63,47 @@ class MainViewModelImpl : MainViewModel() {
     override fun onFabClicked() {
         val value = appState.value!!
         when (value.counterState) {
-            is CounterState.Stopped ->
+            is CounterState.Stopped -> {
                 appStateMutable.value = value.copy(
                     counterState = CounterState.Running(value.timeRep.asMillis()),
                 )
 
-            is CounterState.Paused ->
+                currentTimer = newTimer()
+                currentTimer?.start()
+            }
+
+            is CounterState.Paused -> {
                 appStateMutable.value = value.copy(
                     counterState = CounterState.Running(value.counterState.startTime),
                 )
 
-            is CounterState.Running ->
+                currentTimer = newTimer()
+                currentTimer?.start()
+            }
+
+            is CounterState.Running -> {
                 appStateMutable.value = value.copy(
                     counterState = CounterState.Paused(value.counterState.startTime),
                 )
+                currentTimer?.cancel()
+                currentTimer = null
+            }
         }
     }
+
+    private fun newTimer() =
+        object : CountDownTimer(appState.value!!.timeRep.asMillis().toLong(), 1000) {
+            override fun onTick(millisUntilFinished: Long) {
+                appStateMutable.value = appStateMutable.value!!.copy(
+                    timeRep = millisUntilFinished.toInt().asTime(),
+                )
+            }
+
+            override fun onFinish() {
+                appStateMutable.value = appStateMutable.value!!.copy(
+                    timeRep = 0,
+                    counterState = CounterState.Stopped(-1),
+                )
+            }
+        }
 }
