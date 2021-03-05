@@ -17,11 +17,15 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.example.androiddevchallenge.R
+import com.example.androiddevchallenge.ui.components.CountDownTimer
+import com.example.androiddevchallenge.ui.components.CountDownTimerArc
 import com.example.androiddevchallenge.ui.components.DigiPad
 import com.example.androiddevchallenge.ui.components.Timer
 import com.example.androiddevchallenge.ui.theme.Size
 import com.example.androiddevchallenge.ui.theme.h5Bold
 import com.example.androiddevchallenge.ui.utils.DEFAULT_ANIMATION_DURATION
+import com.example.androiddevchallenge.ui.utils.asMillis
+import com.example.androiddevchallenge.ui.utils.asTime
 import com.example.androiddevchallenge.ui.utils.asTimeString
 import com.example.androiddevchallenge.ui.viewmodels.AppState
 import com.example.androiddevchallenge.ui.viewmodels.MainViewModel
@@ -48,25 +52,46 @@ fun CounterScreen(
             Fab(appState!!.hasTime())
         }
     ) {
+//        TimerSetup(appState, viewModel)
+
         Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(top = Size.xxlarge),
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Timer(
-                value = appState!!.timeRep.asTimeString(),
-                onBackSpaceClicked = viewModel::onBackSpaceClicked,
-                modifier = Modifier.padding(top = Size.xxlarge)
-            )
 
-            Divider(color = MaterialTheme.colors.primary, modifier = Modifier.padding(Size.medium))
-
-            DigiPad(
-                onDigitClicked = viewModel::onDigitClicked,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .wrapContentHeight(),
+            CountDownTimer(
+                startTimeMillis = 10800000,
+                currentTimeMillis = 13000.asMillis(),
+                modifier = Modifier.fillMaxSize(),
             )
         }
+    }
+}
 
+@Composable
+private fun TimerSetup(
+    appState: AppState?,
+    viewModel: MainViewModel
+) {
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+    ) {
+        Timer(
+            value = appState!!.timeRep.asTimeString(),
+            onBackSpaceClicked = viewModel::onBackSpaceClicked,
+            modifier = Modifier.padding(top = Size.xxlarge)
+        )
+
+        Divider(color = MaterialTheme.colors.primary, modifier = Modifier.padding(Size.medium))
+
+        DigiPad(
+            onDigitClicked = viewModel::onDigitClicked,
+            modifier = Modifier
+                .fillMaxWidth()
+                .wrapContentHeight(),
+        )
     }
 }
 

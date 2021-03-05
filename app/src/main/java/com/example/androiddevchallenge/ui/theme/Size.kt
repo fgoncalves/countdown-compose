@@ -11,4 +11,5 @@ object Size {
     val xlarge = 20.dp
     val xxlarge = 24.dp
     val xxxlarge = 32.dp
+    val xxxxlarge = 36.dp
 }
