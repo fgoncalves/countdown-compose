@@ -110,7 +110,7 @@ private fun RunningTimer(
                 text = stringResource(id = R.string.stop),
                 style = MaterialTheme.typography.subtitle1.copy(
                     color = if (isPaused)
-                        MaterialTheme.colors.primary
+                        MaterialTheme.colors.secondary
                     else
                     // Don't really know how to grab this from the theme
                         Color.LightGray,
