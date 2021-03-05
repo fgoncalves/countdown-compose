@@ -38,6 +38,8 @@ abstract class MainViewModel : ViewModel() {
     abstract fun onBackSpaceClicked()
 
     abstract fun onFabClicked()
+
+    abstract fun onStopButtonClicked()
 }
 
 class MainViewModelImpl : MainViewModel() {
@@ -89,6 +91,15 @@ class MainViewModelImpl : MainViewModel() {
                 currentTimer = null
             }
         }
+    }
+
+    override fun onStopButtonClicked() {
+        val value = appState.value!!
+        appStateMutable.value = value.copy(
+            counterState = CounterState.Stopped(0),
+        )
+        currentTimer?.cancel()
+        currentTimer = null
     }
 
     private fun newTimer() =

@@ -28,7 +28,7 @@ fun typography(colors: Colors) = Typography(
         fontSize = 24.sp,
         letterSpacing = 0.sp,
         color = colors.onPrimary,
-    )
+    ),
 )
 
 val Typography.h2SemiBold get() = h2.copy(fontWeight = FontWeight.SemiBold)

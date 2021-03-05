@@ -5,6 +5,7 @@ import androidx.compose.animation.core.MutableTransitionState
 import androidx.compose.animation.core.animateDp
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.core.updateTransition
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
@@ -60,14 +61,24 @@ fun CounterScreen(
         }
     ) {
         if (appState!!.counterState is CounterState.Stopped)
-            TimerSetup(appState, viewModel)
+            TimerSetup(
+                appState = appState,
+                onBackSpaceClicked = viewModel::onBackSpaceClicked,
+                onDigitClicked = viewModel::onDigitClicked,
+            )
         else
-            RunningTimer(appState)
+            RunningTimer(
+                appState = appState!!,
+                onStopClicked = viewModel::onStopButtonClicked,
+            )
     }
 }
 
 @Composable
-private fun RunningTimer(appState: AppState?) {
+private fun RunningTimer(
+    appState: AppState,
+    onStopClicked: () -> Unit = {}
+) {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -75,31 +86,60 @@ private fun RunningTimer(appState: AppState?) {
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         CountDownTimer(
-            startTimeMillis = appState!!.counterState.startTime,
+            startTimeMillis = appState.counterState.startTime,
             currentTimeMillis = appState.timeRep.asMillis(),
-            modifier = Modifier.fillMaxSize(),
+            modifier = Modifier.fillMaxWidth(),
         )
+
+        val isPaused = appState.counterState is CounterState.Paused
+        val modifier = if (isPaused)
+            Modifier
+                .padding(top = Size.xxxxlarge)
+                .clickable {
+                    onStopClicked()
+                }
+        else
+            Modifier.padding(top = Size.xxxxlarge)
+
+        Box(
+            modifier = modifier,
+            contentAlignment = Alignment.Center
+        ) {
+
+            Text(
+                text = stringResource(id = R.string.stop),
+                style = MaterialTheme.typography.subtitle1.copy(
+                    color = if (isPaused)
+                        MaterialTheme.colors.primary
+                    else
+                    // Don't really know how to grab this from the theme
+                        Color.LightGray,
+                ),
+            )
+        }
+
     }
 }
 
 @Composable
 private fun TimerSetup(
     appState: AppState?,
-    viewModel: MainViewModel
+    onBackSpaceClicked: () -> Unit = {},
+    onDigitClicked: (Int) -> Unit = {},
 ) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         Timer(
             value = appState!!.timeRep.asTimeString(),
-            onBackSpaceClicked = viewModel::onBackSpaceClicked,
+            onBackSpaceClicked = onBackSpaceClicked,
             modifier = Modifier.padding(top = Size.xxlarge)
         )
 
         Divider(color = MaterialTheme.colors.primary, modifier = Modifier.padding(Size.medium))
 
         DigiPad(
-            onDigitClicked = viewModel::onDigitClicked,
+            onDigitClicked = onDigitClicked,
             modifier = Modifier
                 .fillMaxWidth()
                 .wrapContentHeight(),
