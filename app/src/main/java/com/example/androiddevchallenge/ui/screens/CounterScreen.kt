@@ -1,5 +1,6 @@
 package com.example.androiddevchallenge.ui.screens
 
+import androidx.annotation.DrawableRes
 import androidx.compose.animation.core.MutableTransitionState
 import androidx.compose.animation.core.animateDp
 import androidx.compose.animation.core.tween
@@ -18,16 +19,15 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.example.androiddevchallenge.R
 import com.example.androiddevchallenge.ui.components.CountDownTimer
-import com.example.androiddevchallenge.ui.components.CountDownTimerArc
 import com.example.androiddevchallenge.ui.components.DigiPad
 import com.example.androiddevchallenge.ui.components.Timer
 import com.example.androiddevchallenge.ui.theme.Size
 import com.example.androiddevchallenge.ui.theme.h5Bold
 import com.example.androiddevchallenge.ui.utils.DEFAULT_ANIMATION_DURATION
 import com.example.androiddevchallenge.ui.utils.asMillis
-import com.example.androiddevchallenge.ui.utils.asTime
 import com.example.androiddevchallenge.ui.utils.asTimeString
 import com.example.androiddevchallenge.ui.viewmodels.AppState
+import com.example.androiddevchallenge.ui.viewmodels.CounterState
 import com.example.androiddevchallenge.ui.viewmodels.MainViewModel
 
 @Composable
@@ -49,24 +49,36 @@ fun CounterScreen(
             )
         },
         floatingActionButton = {
-            Fab(appState!!.hasTime())
-        }
-    ) {
-//        TimerSetup(appState, viewModel)
-
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(top = Size.xxlarge),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-
-            CountDownTimer(
-                startTimeMillis = 10800000,
-                currentTimeMillis = 13000.asMillis(),
-                modifier = Modifier.fillMaxSize(),
+            Fab(
+                icon = if (appState!!.counterState is CounterState.Running)
+                    R.drawable.ic_pause
+                else
+                    R.drawable.ic_play_arrow,
+                enabled = appState!!.hasTime(),
+                onClick = viewModel::onFabClicked,
             )
         }
+    ) {
+        if (appState!!.counterState is CounterState.Stopped)
+            TimerSetup(appState, viewModel)
+        else
+            RunningTimer(appState)
+    }
+}
+
+@Composable
+private fun RunningTimer(appState: AppState?) {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(top = Size.xxlarge),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        CountDownTimer(
+            startTimeMillis = appState!!.counterState.startTime,
+            currentTimeMillis = appState.timeRep.asMillis(),
+            modifier = Modifier.fillMaxSize(),
+        )
     }
 }
 
@@ -96,7 +108,12 @@ private fun TimerSetup(
 }
 
 @Composable
-private fun Fab(enabled: Boolean = true) {
+private fun Fab(
+    @DrawableRes
+    icon: Int = 0,
+    enabled: Boolean = true,
+    onClick: () -> Unit = {},
+) {
     val transitionState = remember {
         MutableTransitionState(enabled).apply {
             targetState = !enabled
@@ -112,7 +129,7 @@ private fun Fab(enabled: Boolean = true) {
 
     FloatingActionButton(
         backgroundColor = MaterialTheme.colors.secondary,
-        onClick = {},
+        onClick = onClick,
         modifier = Modifier.size(size)
     ) {
         Row(
@@ -120,7 +137,7 @@ private fun Fab(enabled: Boolean = true) {
             verticalAlignment = Alignment.CenterVertically,
         ) {
             Icon(
-                painter = painterResource(id = R.drawable.ic_play_arrow),
+                painter = painterResource(id = icon),
                 contentDescription = null,
                 tint = Color.White,
             )
